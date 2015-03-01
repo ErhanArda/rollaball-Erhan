@@ -4,6 +4,7 @@ using System.Collections;
 public class PlayerController : MonoBehaviour 
 {
 	public float speed;
+	public float grondCheck;
 	private int count;
 	public float fly;
 	public GUIText countText;
@@ -11,6 +12,7 @@ public class PlayerController : MonoBehaviour
 	private bool jumpControl;
 	void Start ()
 	{
+		jumpControl = true;
 		count = 0;
 		SetCountText();
 		winText.text="";
@@ -27,22 +29,41 @@ public class PlayerController : MonoBehaviour
 
 		rigidbody.AddForce (movement*speed*Time.deltaTime);
 
+		groundCheck ();
 		if (jumpControl) {
 		
 			if(Input.GetButton("Jump"))
 			{
 				rigidbody.AddForce (jump*Time.deltaTime);
+				jumpControl=false;
 			}
 		
 		
 		}
 
-
-
-
-
 	
 	}
+
+	void groundCheck (){
+	
+	
+		RaycastHit hit;
+		Ray isground = new Ray (transform.position, Vector3.down);
+
+		if (Physics.Raycast(isground, out hit,grondCheck)) {
+
+			jumpControl=true;
+
+
+		}
+	
+	
+	
+	
+	
+	
+	}
+
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.gameObject.tag == "PickUp")
@@ -56,24 +77,9 @@ public class PlayerController : MonoBehaviour
 	
 	
 }
-	void OnCollisionEnter(Collision other)
-	{
 
-		if (other.gameObject.tag == "Ground") {
-			Debug.Log("Player touched");
-			jumpControl=true;
 
-		}
-	}
 
-	void OnCollisionExit(Collision other){
-	
-		if (other.gameObject.tag == "Ground") {
-			Debug.Log ("Player Untouched");
-			jumpControl = false;
-	
-		}	
-	}
 
 
 	void SetCountText()
@@ -83,7 +89,10 @@ public class PlayerController : MonoBehaviour
 		if (count >= 8) 
 		{
 			winText.text="YOU WıN!";
+			gameObject.renderer.material.color=Color.blue;
 		}
+
+
 	}
 
 
