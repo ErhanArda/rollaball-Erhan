@@ -27,14 +27,14 @@ public class PlayerController : MonoBehaviour
 		Vector3 movement = new Vector3 (moveHorizontal, 0.0f, moveVertical);
 		Vector3 jump = new Vector3 (0.0f, fly, 0.0f);
 
-		rigidbody.AddForce (movement*speed*Time.deltaTime);
+		GetComponent<Rigidbody>().AddForce (movement*speed*Time.deltaTime);
 
 		groundCheck ();
 		if (jumpControl) {
 		
 			if(Input.GetButton("Jump"))
 			{
-				rigidbody.AddForce (jump*Time.deltaTime);
+				GetComponent<Rigidbody>().AddForce (jump*Time.deltaTime);
 				jumpControl=false;
 			}
 		
@@ -89,7 +89,7 @@ public class PlayerController : MonoBehaviour
 		if (count >= 8) 
 		{
 			winText.text="YOU WıN!";
-			gameObject.renderer.material.color=Color.blue;
+			gameObject.GetComponent<Renderer>().material.color=Color.blue;
 		}
 
 
