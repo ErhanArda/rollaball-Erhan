@@ -10,16 +10,19 @@ public class PlayerController : MonoBehaviour
 	public float fly;
 	public GUIText countText;
 	public GUIText winText;
+	public float airspeed;
 	private bool jumpControl;
 	private int pickles;
 	private int loadedlvl;
 	//private Vector3 startPos;
 
-	private float normalSpeed=500;
+
 	private float redSpeed=1000;
 
-	private bool dblJump=false;
+	private int dblJump=0;
 	private bool blueBuff=false;
+
+	private bool redBuff=false;
 
 
 	void Start ()
@@ -50,6 +53,7 @@ public class PlayerController : MonoBehaviour
 		Movements ();
 		GreenBuff ();
 		BlueBuff ();
+	
 
 
 	
@@ -114,9 +118,9 @@ public class PlayerController : MonoBehaviour
 	void GreenBuff(){
 	
 		if (gameObject.GetComponent<Renderer> ().material.color == Color.green && jumpControl)
-			dblJump = true;
+			dblJump = 1;
 		else if(gameObject.GetComponent<Renderer> ().material.color != Color.green)
-			dblJump = false;
+			dblJump = 0;
 	
 	
 	
@@ -149,17 +153,23 @@ public class PlayerController : MonoBehaviour
 
 			
 			
-		} else if (!jumpControl && dblJump) {
+		}  
+
+		else{
+
+
+			GetComponent<Rigidbody> ().AddForce (movement * airspeed * Time.deltaTime);
+		if (dblJump>0) {
 		
 			if (Input.GetButtonDown ("Jump")) {
 
 
 				GetComponent<Rigidbody> ().AddForce (jump * Time.deltaTime);
-				dblJump = !dblJump;
+				dblJump --;
 			
 			}
 
-		} else if (!jumpControl && blueBuff) {
+		} else if ( blueBuff) {
 		
 		
 			if(Input.GetButton("Jump"))
@@ -171,8 +181,14 @@ public class PlayerController : MonoBehaviour
 
 	
 	
-	}
+	 }
+		if (redBuff) {
 
+			GetComponent<Rigidbody> ().AddForce (movement * redSpeed* Time.deltaTime,ForceMode.Impulse);
+			redBuff=!redBuff;
+		
+		}
+	}
 
 
 
@@ -180,7 +196,7 @@ public class PlayerController : MonoBehaviour
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.gameObject.tag == "PickUpRed") {
-			speed = redSpeed;
+			redBuff=true;
 			other.gameObject.SetActive (false);
 			count = count + 1;
 			SetCountText ();
@@ -188,13 +204,13 @@ public class PlayerController : MonoBehaviour
 
 
 		} else if (other.gameObject.tag == "PickUpGreen") {
-			speed = normalSpeed;
+			dblJump=2;
 			other.gameObject.SetActive (false);
 			count = count + 1;
 			SetCountText ();
 			gameObject.GetComponent<Renderer> ().material.color = Color.green;
 		} else if (other.gameObject.tag == "PickUpBlue") {
-			speed = normalSpeed;
+		
 			other.gameObject.SetActive (false);
 			count = count + 1;
 			SetCountText ();
